@@ -38,6 +38,8 @@ AUTH_USER_MODEL = 'account.User'
 INSTALLED_APPS = [
     # local apps
     'account',
+    'categories',
+    'posts',
     # Third party apps
     'rest_framework',
     'rest_framework_simplejwt',

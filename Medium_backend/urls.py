@@ -23,6 +23,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/api/', include('account.urls')),
+    path('categories/api/', include('categories.urls')),
+    path('posts/api/', include('posts.urls')),
     path('api-auth/', include('rest_framework.urls'))
 
 ]
