@@ -29,10 +29,10 @@ class UserInfo(models.Model):
     website = models.CharField(max_length=250, null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self) -> str:
-        return self.user
-    
+        return f"{self.user.username}'s info"
+
 class Follow(models.Model):
     follower = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='following')
     following = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='followers')

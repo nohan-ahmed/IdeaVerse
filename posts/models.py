@@ -28,6 +28,7 @@ class Post(models.Model):
 class Image(models.Model):
     post = models.ForeignKey(to=Post, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to=user_directory_path)
+    # Alt text is used where the image does not load for some reason. This text will be displayed on the user display.
     alternative_text = models.CharField( max_length=100, null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     def __str__(self) -> str:
