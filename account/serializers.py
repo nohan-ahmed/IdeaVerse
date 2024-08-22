@@ -1,7 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from .models import User
+from .models import User, Follow, UserInfo
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -77,7 +77,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("User with this email does not exist.")
         return value
-    
+
 class PasswordResetConfirmSerializer(serializers.Serializer):
     new_password = serializers.CharField(style={'input_type':'password'}, write_only=True)
     confirm_password = serializers.CharField(style={'input_type':'password'}, write_only=True)
@@ -88,3 +88,24 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         validate_password(attrs.get('new_password'), user=None)
         return attrs
 
+
+class FollowerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = "__all__"
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "created_at": {"read_only": True},
+        }
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserInfo
+        fields = '__all__'
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "created_at": {"read_only": True},
+        }
+
+        

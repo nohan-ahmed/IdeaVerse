@@ -12,13 +12,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 # custom moduls
-from .models import User
+from .models import User, Follow, UserInfo
 from . import serializers
 from .utils import (
     send_verification_email,
     get_tokens_for_user,
 )
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, UserInfoIsOwnerOrReadOnly
 
 # Create your views here.
 
@@ -121,3 +121,32 @@ class PasswordResetConfirmView(APIView):
         else:
             return Response({"message": "Invalid token or user ID."}, status=status.HTTP_400_BAD_REQUEST)
 
+class UserInfoCreateAPIView(generics.CreateAPIView):
+    queryset = UserInfo.objects.all()
+    serializer_class = serializers.UserInfoSerializer
+    permission_classes =[IsAuthenticated]
+
+class UserInfoRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    queryset  = UserInfo.objects.all()
+    serializer_class = serializers.UserInfoSerializer
+    permission_classes = [UserInfoIsOwnerOrReadOnly]
+    
+class FollowAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        follower_user= serializer.data.get('follower')
+        following_user = serializer.data.get('following')
+        
+        serializer = serializers.FollowerSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # if the follwer already following this user it will return the follow model's instance. otherwise None.
+        already_following = Follow.objects.filter(follower= follower_user, following = following_user)
+        
+        if already_following:
+            # Unfollow if the follower already following.
+            already_following.delete() # it will be remove this instance from the follow model 
+            return Response({'message':'{follower_user} Unfollow {following_user}'}, status=status.HTTP_204_NO_CONTENT)
+        
+        serializer.save() # if follwer don't following this account it will create new instance for follow model
+        return Response({'message':f'{follower_user} following {following_user}'}, status=status.HTTP_201_CREATED)
+            

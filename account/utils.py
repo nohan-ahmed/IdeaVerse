@@ -31,3 +31,7 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
+# this function genarate dynamic path to store users profile images
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return f'account/media/user_{instance.id}/{filename}'
