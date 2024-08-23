@@ -163,8 +163,9 @@ class FollowAPIView(APIView):
         
         """
         এখানে আমরা একটা new follow model's instance create করতেছি। কিন্তু আমরা আমাদের FollowerSerializer এর মধ্যে follower field কে read only করে রেখেছি।
-        Becuse আমদের follower কে আমারা backend থেকে handle করবো। Becuse of আমদের follower request.user নিজেই। FollowerSerializer.save() কে call করবো আমদের follower model error দিবে কারন সে দুইটা field নেয় follower and following.
+        Because আমদের follower কে আমারা backend থেকে handle করবো। Because of আমদের follower request.user নিজেই। FollowerSerializer.save() কে call করবো আমদের follower model error দিবে কারন সে দুইটা field নেয় follower and following.
         আর follower কে read_only রাখার কারনে frontend থেকে ডাটা গুলো আসেই নাই। তাই আমরা সেটা কে save() method এর মধ্যে দিয়ে দিলাম।
+        Basically যদি কনো field কে আমরা backend থেকে handle করতে চাই সেটা আমরা serializer.save() এর মধ্যে দিয়ে দিবো।
         """
         serializer.save(follower=follower_user) # if follwer don't following this account it will create new instance for follow model
         return Response({'message':f'{follower_user} following {following_user}'}, status=status.HTTP_201_CREATED)
