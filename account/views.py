@@ -54,6 +54,19 @@ class ProfileView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = serializers.ProfileSerializer
     permission_classes = [IsOwnerOrReadOnly]
+    def retrieve(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        
+        # Serialize the followers and following
+        followers = serializers.FollowerSerializer(user.followers.all(), many=True)
+        following = serializers.FollowerSerializer(user.following.all(), many=True)
+        
+        return Response({
+            'user': serializer.data, 
+            'followers':followers.data, 
+            'following': following.data
+        })
 
 class PasswordChangeView(APIView):
     def put(self, request,format=None):
@@ -134,19 +147,24 @@ class UserInfoRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
 class FollowAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
-        follower_user= serializer.data.get('follower')
-        following_user = serializer.data.get('following')
-        
+
         serializer = serializers.FollowerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # if the follwer already following this user it will return the follow model's instance. otherwise None.
+        
+        follower_user= request.user
+        following_user = serializer.validated_data.get('following')
+        # if the follower already following this user it will return the follow model's instance. otherwise None.
         already_following = Follow.objects.filter(follower= follower_user, following = following_user)
         
         if already_following:
             # Unfollow if the follower already following.
             already_following.delete() # it will be remove this instance from the follow model 
-            return Response({'message':'{follower_user} Unfollow {following_user}'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'message':f'{follower_user} Unfollow {following_user}'}, status=status.HTTP_204_NO_CONTENT)
         
-        serializer.save() # if follwer don't following this account it will create new instance for follow model
+        """
+        এখানে আমরা একটা new follow model's instance create করতেছি। কিন্তু আমরা আমাদের FollowerSerializer এর মধ্যে follower field কে read only করে রেখেছি।
+        Becuse আমদের follower কে আমারা backend থেকে handle করবো। Becuse of আমদের follower request.user নিজেই। FollowerSerializer.save() কে call করবো আমদের follower model error দিবে কারন সে দুইটা field নেয় follower and following.
+        আর follower কে read_only রাখার কারনে frontend থেকে ডাটা গুলো আসেই নাই। তাই আমরা সেটা কে save() method এর মধ্যে দিয়ে দিলাম।
+        """
+        serializer.save(follower=follower_user) # if follwer don't following this account it will create new instance for follow model
         return Response({'message':f'{follower_user} following {following_user}'}, status=status.HTTP_201_CREATED)
-            

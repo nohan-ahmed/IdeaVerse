@@ -94,7 +94,7 @@ class FollowerSerializer(serializers.ModelSerializer):
         model = Follow
         fields = "__all__"
         extra_kwargs = {
-            "id": {"read_only": True},
+            "follower": {"read_only": True},
             "created_at": {"read_only": True},
         }
 

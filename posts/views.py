@@ -48,3 +48,8 @@ class LikeAPIView(APIView):
                 like.delete()
                 return Response({'like': 'Unlike successfully!'}, status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ImageAPIView(ModelViewSet):
+    queryset = models.Image.objects.all()
+    serializer_class = serializers.ImageSerializer
+    
