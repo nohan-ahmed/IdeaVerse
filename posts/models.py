@@ -6,21 +6,17 @@ from .utils import user_directory_path
 
 class Post(models.Model):
     author = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='posts')
-    thumbnail = models.ImageField(upload_to=user_directory_path)
+    thumbnail = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
     title = models.CharField(max_length=250)
     content = models.TextField()# This will store the HTML content
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name='posts')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
     # post.like_count() returns the total number of Like records related to that particular Post
+    likes = models.ManyToManyField(User, through='Like', related_name='liked_posts')
     def like_count(self):
         # Here, related_name='likes' allows you to access the related Like instances from a Post instance using self.likes.
         return self.likes.count()
-
-    # It returns True if the user has liked the post, and False otherwise.
-    def is_liked_by_user(self, user):
-        return self.likes.filter(user=user).exists()
 
     def __str__(self):
         return self.title
@@ -35,7 +31,7 @@ class Image(models.Model):
         return f'{self.id}'
 
 class Like(models.Model):
-    post = models.ForeignKey(Post, related_name='likes', on_delete=models.CASCADE)
+    post = models.ForeignKey(to=Post, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

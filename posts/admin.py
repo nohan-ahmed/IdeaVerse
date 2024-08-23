@@ -14,6 +14,8 @@ class ImageAdmin(admin.ModelAdmin):
 @admin.register(models.Like)
 class LikeAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'post']
+    def post(self, obj):
+        return obj.post
     
 @admin.register(models.Comment)
 class CommentAdmin(admin.ModelAdmin):
