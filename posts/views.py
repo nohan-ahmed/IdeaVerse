@@ -14,8 +14,17 @@ class PostView(ModelViewSet):
     queryset = models.Post.objects.all()
     serializer_class = serializers.PostSerializer
     permission_classes = [IsOwnerOrReadOnly]
-            
-
+    
+    """
+    perform_create Method: This method is a hook provided by Django REST Framework's ModelViewSet. 
+    It allows you to customize the creation of a model instance without completely overriding the create method.
+    """
+    def perform_create(self, serializer):
+        """
+        Setting the author: By calling serializer.save(author=self.request.user), you automatically set the author field to the currently authenticated user when a post is created.
+        This ensures that the author is set correctly and prevents users from tampering with the field
+        """
+        serializer.save(author=self.request.user)
 
 class LikeAPIView(APIView):
     def post(self, request, format=None):
