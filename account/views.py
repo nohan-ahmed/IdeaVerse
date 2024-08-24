@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 # DRF
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 from rest_framework.viewsets import ModelViewSet, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,11 +19,13 @@ from .utils import (
     send_verification_email,
     get_tokens_for_user,
 )
-from .permissions import IsOwnerOrReadOnly, UserInfoIsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, UserInfoIsOwnerOrReadOnly, IsOwner
 
 # Create your views here.
 
 class UserRegistrationView(APIView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'RegistrationAPI'
     def post(self, request, format=None):
         serializer = serializers.RegistrationSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -33,6 +36,8 @@ class UserRegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyEmailView(APIView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'Registration'
     def get(self, request,uid, token, format=None):
         try:
             user_id = smart_str(urlsafe_base64_decode(uid))
@@ -54,10 +59,12 @@ class ProfileView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = serializers.ProfileSerializer
     permission_classes = [IsOwnerOrReadOnly]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'ProfileAPI'
+    
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
         serializer = self.get_serializer(user)
-        
         # Serialize the followers and following
         followers = serializers.FollowerSerializer(user.followers.all(), many=True)
         following = serializers.FollowerSerializer(user.following.all(), many=True)
@@ -69,6 +76,9 @@ class ProfileView(ModelViewSet):
         })
 
 class PasswordChangeView(APIView):
+    permission_classes = [IsOwner]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'PasswordChangeAPI'
     def put(self, request,format=None):
         # If you want to pass additional data to the serializer class, you can pass as a context data
         serializer = serializers.PasswordChangeSerializer(data= request.data, context={'request':request})
@@ -92,6 +102,8 @@ class PasswordChangeView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetRequestView(APIView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'PasswordResetAPI'
     def post(self, request, format=None):
         serializer = serializers.PasswordResetRequestSerializer(data=request.data)
         if serializer.is_valid():
@@ -117,6 +129,9 @@ class PasswordResetRequestView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetConfirmView(APIView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'PasswordResetAPI'
+    
     def post(self, request, uid, token):
         try:
             user_id = smart_str(urlsafe_base64_decode(uid))
@@ -135,17 +150,22 @@ class PasswordResetConfirmView(APIView):
             return Response({"message": "Invalid token or user ID."}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserInfoCreateAPIView(generics.CreateAPIView):
+    throttle_classes =[ScopedRateThrottle]
+    throttle_scope = 'RegistrationAPI'
     queryset = UserInfo.objects.all()
     serializer_class = serializers.UserInfoSerializer
     permission_classes =[IsAuthenticated]
 
 class UserInfoRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'ProfileAPI'
     queryset  = UserInfo.objects.all()
     serializer_class = serializers.UserInfoSerializer
     permission_classes = [UserInfoIsOwnerOrReadOnly]
     
 class FollowAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
     def post(self, request, format=None):
 
         serializer = serializers.FollowerSerializer(data=request.data)

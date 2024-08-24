@@ -4,16 +4,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle, AnonRateThrottle
 from .permissions import IsOwnerOrReadOnly
 from . import models
 from . import serializers
+from .throttling import PostRateThrottle # custom throttling
 # Create your views here.
 
 class PostView(ModelViewSet):
     queryset = models.Post.objects.all()
     serializer_class = serializers.PostSerializer
     permission_classes = [IsOwnerOrReadOnly]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope  = 'My_post'
     
     """
     perform_create Method: This method is a hook provided by Django REST Framework's ModelViewSet. 
@@ -27,6 +30,8 @@ class PostView(ModelViewSet):
         serializer.save(author=self.request.user)
 
 class LikeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
     def post(self, request, format=None):
         serializer = serializers.LikeSerializer(data=request.data)
         if serializer.is_valid():
@@ -50,6 +55,8 @@ class LikeAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ImageAPIView(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
     queryset = models.Image.objects.all()
     serializer_class = serializers.ImageSerializer
     

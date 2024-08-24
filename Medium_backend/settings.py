@@ -136,7 +136,6 @@ MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media' # if we want to store inside a app. then we can ignore this line of code.
 
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -144,14 +143,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # JWT Authentication
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/day",  # Defines the rate limit. In this example, anonymous users are allowed up to 100 requests per day.
+        "user": "2000/hour",  # Defines the rate limit. Authenticated users are allowed up to 5 requests every minute.
+        "Post": "2/minute",
+        "My_post": "4/minute",
+        "RegistrationAPI": "100/day",
+        "ProfileAPI":"5000/day",
+        "PasswordChangeAPI":"1/day",
+        "PasswordResetAPI":"100/day",
+    },
 }
 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 
 }
