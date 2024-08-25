@@ -66,7 +66,7 @@ class ProfileView(ModelViewSet):
     throttle_scope = 'ProfileAPI'
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['first_name', 'last_name','gender']
-    search_fields = ['id','username','email','phone','first_name', 'last_name','gender']
+    search_fields = ['id','username','email','first_name', 'last_name','gender']
     pagination_class = UserPageNumberPagination
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
