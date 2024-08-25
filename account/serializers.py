@@ -108,4 +108,3 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "created_at": {"read_only": True},
         }
 
-        

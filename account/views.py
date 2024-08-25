@@ -5,9 +5,12 @@ from django.utils.encoding import force_bytes, smart_str
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
+from itertools import chain
 # DRF
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import ModelViewSet, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,7 +23,7 @@ from .utils import (
     get_tokens_for_user,
 )
 from .permissions import IsOwnerOrReadOnly, UserInfoIsOwnerOrReadOnly, IsOwner
-
+from .paginations import UserPageNumberPagination
 # Create your views here.
 
 class UserRegistrationView(APIView):
@@ -61,7 +64,10 @@ class ProfileView(ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly]
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'ProfileAPI'
-    
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['first_name', 'last_name','gender']
+    search_fields = ['id','username','email','phone','first_name', 'last_name','gender']
+    pagination_class = UserPageNumberPagination
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
         serializer = self.get_serializer(user)
@@ -74,7 +80,7 @@ class ProfileView(ModelViewSet):
             'followers':followers.data, 
             'following': following.data
         })
-
+        
 class PasswordChangeView(APIView):
     permission_classes = [IsOwner]
     throttle_classes = [ScopedRateThrottle]
@@ -142,7 +148,7 @@ class PasswordResetConfirmView(APIView):
         if user is not None and default_token_generator.check_token(user, token):
             serializer = serializers.PasswordResetConfirmSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
-                user.set_password(serializer.data.get('new_password'))
+                user.set_password(serializer.validated_data.get('new_password'))
                 user.save()
                 return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -162,6 +168,7 @@ class UserInfoRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     queryset  = UserInfo.objects.all()
     serializer_class = serializers.UserInfoSerializer
     permission_classes = [UserInfoIsOwnerOrReadOnly]
+
     
 class FollowAPIView(APIView):
     permission_classes = [IsAuthenticated]

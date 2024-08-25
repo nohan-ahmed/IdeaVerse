@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # Third party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
     # Django core apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -150,11 +151,11 @@ REST_FRAMEWORK = {
         "anon": "100/day",  # Defines the rate limit. In this example, anonymous users are allowed up to 100 requests per day.
         "user": "2000/hour",  # Defines the rate limit. Authenticated users are allowed up to 5 requests every minute.
         "Post": "2/minute",
-        "My_post": "4/minute",
+        "My_post": "20/minute",
         "RegistrationAPI": "100/day",
-        "ProfileAPI":"5000/day",
-        "PasswordChangeAPI":"1/day",
-        "PasswordResetAPI":"100/day",
+        "ProfileAPI": "5000/day",
+        "PasswordChangeAPI": "1/day",
+        "PasswordResetAPI": "100/day",
     },
 }
 
