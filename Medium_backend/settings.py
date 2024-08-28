@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
+    'rest_framework_simplejwt.token_blacklist',
     # Django core apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -156,6 +157,7 @@ REST_FRAMEWORK = {
         "ProfileAPI": "5000/day",
         "PasswordChangeAPI": "1/day",
         "PasswordResetAPI": "100/day",
+        "LogoutAPI": "50/day",
     },
 }
 

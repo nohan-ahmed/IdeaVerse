@@ -171,9 +171,11 @@ This is the most common approach to implement logout with JWTs. It involves main
 blacklist of tokens that have been invalidated. When a user logs out, the token is added to the blacklist, 
 and subsequent requests using this token will be rejected.
 """
+
 class LogoutAPIView(APIView):
     permission_classes = (IsAuthenticated,)  # Ensures only authenticated users can access this view.
-
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'LogoutAPI'
     def post(self, request):
         # Initialize the LogoutSerializer with the request data (which should contain the 'refresh' token).
         serializer = serializers.LogoutSerializer(data=request.data)
@@ -198,7 +200,7 @@ class LogoutAPIView(APIView):
                 return Response({"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST)
 
         # If serializer data is not valid, return the errors with a 400 Bad Request response.
-        return Response({"error": "Invalid refresh token"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserInfoCreateAPIView(generics.CreateAPIView):
     throttle_classes =[ScopedRateThrottle]

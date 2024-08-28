@@ -1,0 +1,14 @@
+asgiref==3.8.1
+Django==5.1
+django-environ==0.11.2
+django-filter==24.3
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
+environs==11.0.0
+marshmallow==3.22.0
+packaging==24.1
+pillow==10.4.0
+PyJWT==2.9.0
+python-dotenv==1.0.1
+sqlparse==0.5.1
+typing_extensions==4.12.2
