@@ -29,7 +29,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         return super().validate(attrs)
         
-    # In your registration serializer class. You need to override the create() method.
+    # To create a new user instance you need to override the create() method for the RegisterSerializer class.
     def create(self, validated_data):
         """
             Remove confirmed password from validated_data. Because confirm_password is not a user model field.
