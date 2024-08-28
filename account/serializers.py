@@ -28,13 +28,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'password': list(e.messages)})
 
         return super().validate(attrs)
-    
+        
+    # In your registration serializer class. You need to override the create() method.
     def create(self, validated_data):
         """
             Remove confirmed password from validated_data. Because confirm_password is not a user model field.
             This is a serializer level field used only for validation purposes.so if you don't remove if before create a user it will raise an exeption.
         """
-        validated_data.pop('confirm_password')  
+        validated_data.pop('confirm_password') 
+        # And you need to create user like below code.
         user = User.objects.create_user(**validated_data)
         return user
 
