@@ -36,7 +36,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
             This is a serializer level field used only for validation purposes.so if you don't remove if before create a user it will raise an exeption.
         """
         validated_data.pop('confirm_password') 
-        # And you need to create user like below code.
+        # And use this approach below to create new user instance, with correct password hashing.
         user = User.objects.create_user(**validated_data)
         return user
 
