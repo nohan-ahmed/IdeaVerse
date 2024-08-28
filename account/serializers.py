@@ -69,7 +69,6 @@ class PasswordChangeSerializer(serializers.Serializer):
         user.save()
         return user
 
-
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=250)
 
@@ -90,7 +89,6 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         validate_password(attrs.get('new_password'), user=None)
         return attrs
 
-
 class FollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
@@ -99,7 +97,6 @@ class FollowerSerializer(serializers.ModelSerializer):
             "follower": {"read_only": True},
             "created_at": {"read_only": True},
         }
-
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -110,3 +107,5 @@ class UserInfoSerializer(serializers.ModelSerializer):
             "created_at": {"read_only": True},
         }
 
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(required=True)

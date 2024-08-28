@@ -15,6 +15,7 @@ from rest_framework.viewsets import ModelViewSet, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
 # custom moduls
 from .models import User, Follow, UserInfo
 from . import serializers
@@ -80,7 +81,7 @@ class ProfileView(ModelViewSet):
             'followers':followers.data, 
             'following': following.data
         })
-        
+
 class PasswordChangeView(APIView):
     permission_classes = [IsOwner]
     throttle_classes = [ScopedRateThrottle]
@@ -155,6 +156,50 @@ class PasswordResetConfirmView(APIView):
         else:
             return Response({"message": "Invalid token or user ID."}, status=status.HTTP_400_BAD_REQUEST)
 
+# Notes for Logout in JWT.
+"""
+To implement a logout feature in Django Rest Framework (DRF) using JSON Web Tokens (JWT), 
+you need to handle JWT token invalidation.Unlike session-based authentication, JWT is stateless, 
+which means that once a token is generated, it cannot be "deleted" on the server side. 
+However, there are several strategies to implement a logout feature using JWT in DRF:
+"""
+
+# 1.Token Blacklisting
+
+"""
+This is the most common approach to implement logout with JWTs. It involves maintaining a 
+blacklist of tokens that have been invalidated. When a user logs out, the token is added to the blacklist, 
+and subsequent requests using this token will be rejected.
+"""
+class LogoutAPIView(APIView):
+    permission_classes = (IsAuthenticated,)  # Ensures only authenticated users can access this view.
+
+    def post(self, request):
+        # Initialize the LogoutSerializer with the request data (which should contain the 'refresh' token).
+        serializer = serializers.LogoutSerializer(data=request.data)
+
+        # Validate the serializer data.
+        if serializer.is_valid(raise_exception=True):
+            # If validation is successful, extract the 'refresh' token from the validated data.
+            try:
+                refresh_token = serializer.validated_data['refresh']
+                
+                # Create a RefreshToken instance from the provided token.
+                token = RefreshToken(refresh_token)
+                
+                # Blacklist the refresh token, effectively logging out the user.
+                token.blacklist()
+                
+                # Return a success response with HTTP 205 status code indicating that the client should reset the view.
+                return Response({"message": "User logout successfully."}, status=status.HTTP_205_RESET_CONTENT)
+            
+            except Exception as e:
+                # If there is an error (e.g., an invalid token), return a 400 Bad Request response.
+                return Response({"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # If serializer data is not valid, return the errors with a 400 Bad Request response.
+        return Response({"error": "Invalid refresh token"}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class UserInfoCreateAPIView(generics.CreateAPIView):
     throttle_classes =[ScopedRateThrottle]
     throttle_scope = 'RegistrationAPI'
@@ -169,7 +214,6 @@ class UserInfoRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.UserInfoSerializer
     permission_classes = [UserInfoIsOwnerOrReadOnly]
 
-    
 class FollowAPIView(APIView):
     permission_classes = [IsAuthenticated]
     throttle_classes = [UserRateThrottle]
@@ -196,3 +240,4 @@ class FollowAPIView(APIView):
         """
         serializer.save(follower=follower_user) # if follwer don't following this account it will create new instance for follow model
         return Response({'message':f'{follower_user} following {following_user}'}, status=status.HTTP_201_CREATED)
+
