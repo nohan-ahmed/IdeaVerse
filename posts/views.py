@@ -7,7 +7,7 @@ from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle, AnonRateThrottle
 from .paginations import CustomPageNumberPagination
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly,IsOwnerOrReadOnlyForComment
 from . import models
 from . import serializers
 from .throttling import PostRateThrottle # custom throttling
@@ -73,4 +73,8 @@ class ImageAPIView(ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields =['post']
      
-    
+class CommentAPIView(ModelViewSet):
+    queryset = models.Comment.objects.all()
+    serializer_class = serializers.CommentSerializer
+    permission_classes = [IsOwnerOrReadOnlyForComment]
+    throttle_classes = [UserRateThrottle]
