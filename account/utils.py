@@ -8,11 +8,12 @@ from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-def send_verification_email(user):
+def send_verification_email(request):
+        user = request.user
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-        verification_link = f"http://127.0.0.1:8000/user/api/verify-email/{uid}/{token}/"
+        verification_link = f"{request.build_absolute_uri('/user/api/verify-email/')}{uid}/{token}/"
         subject = 'Email Verification'
         
         # Render the HTML template with context

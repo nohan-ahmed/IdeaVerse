@@ -32,10 +32,10 @@ class UserRegistrationView(APIView):
     throttle_scope = 'RegistrationAPI'
     def post(self, request, format=None):
         serializer = serializers.RegistrationSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             serializer.validated_data.setdefault('is_active', False)
             user = serializer.save()
-            send_verification_email(user=user)
+            send_verification_email(request=request)
             return Response({'message':"Registration successfully please confirm the email"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -113,7 +113,7 @@ class PasswordResetRequestView(APIView):
     throttle_scope = 'PasswordResetAPI'
     def post(self, request, format=None):
         serializer = serializers.PasswordResetRequestSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             email = serializer.data.get('email')
             user = User.objects.get(email=email)
 

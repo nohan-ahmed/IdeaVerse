@@ -6,7 +6,7 @@ from . import views
 router = DefaultRouter()
 router.register('profile', views.ProfileView, basename='profile')
 urlpatterns = [
-    path('register/', views.UserRegistrationView.as_view(), name='verify-email'),
+    path('register/', views.UserRegistrationView.as_view(), name='registration'),
     path('login/', TokenObtainPairView.as_view(), name='login'), # TokenObtainPairView Returns an access and refresh token if your credential is valid.
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # Allows the client to refresh the access token using the refresh token
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
