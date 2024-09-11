@@ -5,6 +5,7 @@ from django.utils.encoding import force_bytes, smart_str
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.html import strip_tags
 from itertools import chain
 # DRF
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -41,13 +42,13 @@ class UserRegistrationView(APIView):
 
 class VerifyEmailView(APIView):
     throttle_classes = [ScopedRateThrottle]
-    throttle_scope = 'Registration'
+    throttle_scope = 'RegistrationAPI'
     def get(self, request, uid, token, format=None):
         try:
             user_id = smart_str(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=user_id)
         except User.DoesNotExist:
-            return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User with this Uid does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
         # validate the token
         if user is not None and default_token_generator.check_token(user, token):
@@ -90,21 +91,14 @@ class PasswordChangeView(APIView):
         # If you want to pass additional data to the serializer class, you can pass as a context data
         serializer = serializers.PasswordChangeSerializer(data= request.data, context={'request':request})
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            message = f"""
-                Hi {request.user.username},
-
-                Your password was successfully changed on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}. 
-
-                If you did not make this change, please secure your account immediately by visiting the following link:
-                [Secure Your Account](#)
-
-                Thank you,
-                The Team Meduam.com
-                """
+            user = serializer.save()
+            message = render_to_string('./account/change_password_email.html', {
+                'user':user,
+                'time':{timezone.now().strftime('%Y-%m-%d %H:%M:%S')}
+            })
 
             subject = "Your Password Has Been Changed"
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [request.user.email])
+            send_mail(subject, strip_tags(message), settings.DEFAULT_FROM_EMAIL, [request.user.email])
             return Response({'Message':'Passwrod changed successfully!'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

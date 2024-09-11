@@ -65,9 +65,12 @@ class PasswordChangeSerializer(serializers.Serializer):
 
     def save(self, **kwargs):
         user = self.context.get('request').user
-        user.set_password(kwargs.get('new_password'))
+        new_password = self.validated_data.get('new_password')  # Accessing the new password from validated data
+        user.set_password(new_password)
         user.save()
         return user
+
+
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=250)
