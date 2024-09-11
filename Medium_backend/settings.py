@@ -155,7 +155,7 @@ REST_FRAMEWORK = {
         "My_post": "20/minute",
         "RegistrationAPI": "100/day",
         "ProfileAPI": "5000/day",
-        "PasswordChangeAPI": "100/day",
+        "PasswordChangeAPI": "1/day",
         "PasswordResetAPI": "100/day",
         "LogoutAPI": "50/day",
     },
