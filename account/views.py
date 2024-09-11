@@ -35,14 +35,14 @@ class UserRegistrationView(APIView):
         if serializer.is_valid():
             serializer.validated_data.setdefault('is_active', False)
             user = serializer.save()
-            send_verification_email(request=request)
+            send_verification_email(user, request=request)
             return Response({'message':"Registration successfully please confirm the email"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyEmailView(APIView):
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'Registration'
-    def get(self, request,uid, token, format=None):
+    def get(self, request, uid, token, format=None):
         try:
             user_id = smart_str(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=user_id)
@@ -114,7 +114,7 @@ class PasswordResetRequestView(APIView):
     def post(self, request, format=None):
         serializer = serializers.PasswordResetRequestSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            email = serializer.data.get('email')
+            email = serializer.data.get('email') 
             user = User.objects.get(email=email)
 
             # Generate a password reset token
@@ -159,7 +159,7 @@ class PasswordResetConfirmView(APIView):
 # Notes for Logout in JWT.
 """
 To implement a logout feature in Django Rest Framework (DRF) using JSON Web Tokens (JWT), 
-you need to handle JWT token invalidation.Unlike session-based authentication, JWT is stateless, 
+you need to handle JWT token invalidation. Unlike session-based authentication, JWT is stateless, 
 which means that once a token is generated, it cannot be "deleted" on the server side. 
 However, there are several strategies to implement a logout feature using JWT in DRF:
 """

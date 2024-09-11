@@ -8,8 +8,7 @@ from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-def send_verification_email(request):
-        user = request.user
+def send_verification_email(user, request):
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
