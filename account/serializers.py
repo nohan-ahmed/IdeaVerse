@@ -73,8 +73,6 @@ class PasswordChangeSerializer(serializers.Serializer):
         user.save()
         return user
 
-
-
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=250)
 

@@ -119,14 +119,16 @@ class PasswordResetRequestView(APIView):
             reset_link = f"{request.build_absolute_uri('/user/api/reset-password/confirm/')}{uid}/{token}/"
 
             # Send the email
-            subject = "Password Reset Request"
-            message = f"""
-                'user': {user},
-                'reset_link': {reset_link},"""
+            subject = "Password Reset Confirmation"
+            message = render_to_string("./account/password_rest_request_email.html",{
+                    "user": user,
+                    "reset_password_link": reset_link,
+                },
+            )
 
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+            send_mail(subject, strip_tags(message), settings.DEFAULT_FROM_EMAIL, [user.email])
             return Response({"message": "Password reset email has been sent."}, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PasswordResetConfirmView(APIView):
@@ -236,4 +238,3 @@ class FollowAPIView(APIView):
         """
         serializer.save(follower=follower_user) # if follwer don't following this account it will create new instance for follow model
         return Response({'message':f'{follower_user} following {following_user}'}, status=status.HTTP_201_CREATED)
-
