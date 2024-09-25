@@ -14,10 +14,10 @@ class User(AbstractUser):
     brith_date = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=50,choices=GENDER_TYPE)
     
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = 'username' # Specifies the field used for authentication. In this case, it’s set to `email`.
     REQUIRED_FIELDS =['email']
     
-    objects = Manager()
+    objects = Manager() # Calling CustomManager to manage CustomUser model.
     
     def __str__(self) -> str:
         return super().__str__()
