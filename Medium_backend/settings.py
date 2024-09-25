@@ -161,12 +161,13 @@ REST_FRAMEWORK = {
     },
 }
 
-
+# You can customize JWT settings like token expiration times in your settings.py:
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 
 }
+
 # for email sending
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
