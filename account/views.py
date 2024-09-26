@@ -108,7 +108,7 @@ class PasswordResetRequestView(APIView):
     def post(self, request, format=None):
         serializer = serializers.PasswordResetRequestSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            email = serializer.data.get('email') 
+            email = serializer.validated_data.get('email') 
             user = User.objects.get(email=email)
 
             # Generate a password reset token
