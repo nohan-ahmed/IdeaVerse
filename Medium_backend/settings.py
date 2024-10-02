@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'rest_framework_simplejwt.token_blacklist',
+    
     # Django core apps
     'django.contrib.admin',
     'django.contrib.auth',
