@@ -138,6 +138,35 @@ MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media' # if we want to store inside a app. then we can ignore this line of code.
 
 
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",  # Media files
+        "OPTIONS": {
+            "location": "media",  # Media folder in S3 bucket
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",  # Static files
+        "OPTIONS": {
+            "location": "static",  # Static folder in S3 bucket
+        },
+    },
+}
+
+# Todo: I just copy this code. I didn't configure so I need to configure it:
+
+# AWS Credentials and settings
+# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+# AWS_S3_FILE_OVERWRITE = False  # Do not overwrite files
+# AWS_DEFAULT_ACL = None  # Avoid permission issues
+
+# # URLs to access static and media files
+# MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+# STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
