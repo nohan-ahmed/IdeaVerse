@@ -24,7 +24,7 @@ class User(AbstractUser):
 
 class UserInfo(models.Model):
     user = models.OneToOneField(to=User, on_delete=models.CASCADE, related_name='user_info')
-    location = models.CharField( max_length=250)
+    location = models.CharField( max_length=250, null=True, blank=True)
     study_at = models.CharField(max_length=250, null=True, blank=True)
     website = models.CharField(max_length=250, null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
