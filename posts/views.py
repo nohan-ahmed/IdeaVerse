@@ -5,9 +5,9 @@ from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle, AnonRateThrottle
+from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle
 from .paginations import CustomPageNumberPagination
-from .permissions import IsOwnerOrReadOnly,IsOwnerOrReadOnlyForComment
+from .permissions import IsOwnerOrReadOnly, IsOwnerOrReadOnlyForComment
 from . import models
 from . import serializers
 from .throttling import PostRateThrottle # custom throttling
@@ -17,13 +17,13 @@ from account.models import User
 class PostView(ModelViewSet):
     queryset = models.Post.objects.all()
     serializer_class = serializers.PostSerializer
-    permission_classes = [IsOwnerOrReadOnly]
-    throttle_classes = [ScopedRateThrottle]
-    throttle_scope  = 'My_post'
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['author', 'category'] # This means user can filter based on author, category fields, 
     search_fields  = ['title']
     pagination_class = CustomPageNumberPagination
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope  = 'My_post'
 
     def perform_create(self, serializer):
         """
@@ -76,5 +76,8 @@ class ImageAPIView(ModelViewSet):
 class CommentAPIView(ModelViewSet):
     queryset = models.Comment.objects.all()
     serializer_class = serializers.CommentSerializer
-    permission_classes = [IsOwnerOrReadOnlyForComment]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnlyForComment]
     throttle_classes = [UserRateThrottle]
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
