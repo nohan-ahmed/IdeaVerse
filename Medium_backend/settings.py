@@ -139,37 +139,37 @@ MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media' # if we want to store inside a app. then we can ignore this line of code.
 
 # AWS S3 Configuration
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='us-east-1')  # Adjust the region as needed
-AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-AWS_S3_FILE_OVERWRITE = False  # Avoid overwriting files with the same name
-AWS_DEFAULT_ACL = None  # Recommended to prevent permission issues
-AWS_QUERYSTRING_AUTH = False  # Disable query parameter authentication for public files
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',  # Cache files for 24 hours for performance optimization
-}
+# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='us-east-1')  # Adjust the region as needed
+# AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+# AWS_S3_FILE_OVERWRITE = False  # Avoid overwriting files with the same name
+# AWS_DEFAULT_ACL = None  # Recommended to prevent permission issues
+# AWS_QUERYSTRING_AUTH = False  # Disable query parameter authentication for public files
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',  # Cache files for 24 hours for performance optimization
+# }
 
 # Static and media files configuration
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",  # Media file storage on S3
-        "OPTIONS": {
-            "location": "media",  # Store media files in 'media' folder in the S3 bucket
-        },
-    },
-    "staticfiles": {
-        "BACKEND": "storages.backends.s3.S3Storage",  # Static file storage on S3
-        "OPTIONS": {
-            "location": "static",  # Store static files in 'static' folder in the S3 bucket
-        },
-    },
-}
+# STORAGES = {
+#     "default": {
+#         "BACKEND": "storages.backends.s3.S3Storage",  # Media file storage on S3
+#         "OPTIONS": {
+#             "location": "media",  # Store media files in 'media' folder in the S3 bucket
+#         },
+#     },
+#     "staticfiles": {
+#         "BACKEND": "storages.backends.s3.S3Storage",  # Static file storage on S3
+#         "OPTIONS": {
+#             "location": "static",  # Store static files in 'static' folder in the S3 bucket
+#         },
+#     },
+# }
 
-# URL to access static and media files
-STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
-MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+# # URL to access static and media files
+# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+# MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 
 # AWS S3 Configuration End.
 
