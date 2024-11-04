@@ -81,13 +81,13 @@ class ProfileView(ModelViewSet):
             'user': serializer.data, 
             'followers':followers.data, 
             'following': following.data
-        })
+        }, status=status.HTTP_200_OK)
 
 class PasswordChangeView(APIView):
     permission_classes = [IsOwner]
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'PasswordChangeAPI'
-    def put(self, request,format=None):
+    def post(self, request,format=None):
         # If you want to pass additional data to the serializer class, you can pass as a context data
         serializer = serializers.PasswordChangeSerializer(data= request.data, context={'request':request})
         if serializer.is_valid(raise_exception=True):
