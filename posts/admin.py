@@ -3,8 +3,8 @@ from . import models
 # Register your models here.
 @admin.register(models.Post)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'author', 'title', 'category']
-    search_fields = ['id', 'author', 'title', 'category']
+    list_display = ['id', 'user', 'title', 'category']
+    search_fields = ['id', 'user', 'title', 'category']
 
 @admin.register(models.Image)
 class ImageAdmin(admin.ModelAdmin):

@@ -4,7 +4,7 @@ from categories.models import Category
 # Create your models here.
 
 class Post(models.Model):
-    author = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='posts')
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='posts')
     thumbnail = models.ImageField(upload_to='posts/media/images/', null=True, blank=True)
     title = models.CharField(max_length=250)
     content = models.TextField()# This will store the HTML content
