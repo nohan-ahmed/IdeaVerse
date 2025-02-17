@@ -18,7 +18,7 @@ class PostView(ModelViewSet):
     queryset = models.Post.objects.all()
     serializer_class = serializers.PostSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['author', 'category'] # This means user can filter based on author, category fields, 
+    filterset_fields = ['user', 'category'] # This means user can filter based on author, category fields, 
     search_fields  = ['title']
     pagination_class = CustomPageNumberPagination
     permission_classes = [IsOwnerOrReadOnly]
