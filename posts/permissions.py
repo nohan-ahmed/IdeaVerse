@@ -2,22 +2,19 @@ from rest_framework import permissions
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Object-level permission to only allow owners of an object to edit it.
-    Assumes the model instance has an `owner` attribute.
+    Custom permission to only allow owners of an object to edit or delete it.
     """
 
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
+    def has_permission(self, request, view):
+        # Allow read-only permissions for any request
         if request.method in permissions.SAFE_METHODS:
             return True
+        # Otherwise, ensure the user is authenticated
+        return request.user and request.user.is_authenticated
 
-        # Return true if request.user owns the object. otherwise false.
-        # This means that if object.author and request.user are the same then it allows any action to be performed. Otherwise not allowed
-        return obj.author == request.user
-    
-class IsOwnerOrReadOnlyForComment(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed for any request
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj.author == request.user
+        # Write permissions are only allowed to the owner of the post
+        return obj.user == request.user
